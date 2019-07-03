@@ -23,6 +23,8 @@ namespace PortScanner
             InitializeComponent();
 
             PortInfo.InitializePortDictionary();
+            Icon = Properties.Resources.PortScannerIcon;
+            notifyIcon.Icon = Properties.Resources.PortScannerIcon;
             portScanner = new PortScanner();
             portListForm = new PortListForm();
             portsBindingList = new BindingList<PortInfo>();
@@ -123,6 +125,7 @@ namespace PortScanner
             }
 
             await portScanner.Scan(targetIpAddress, portsBindingList);
+            ShowMessage("The port scan has been finished.", "Scan results", MessageType.Information);
             UnlockControls();
         }
 
@@ -214,6 +217,62 @@ namespace PortScanner
                 }
             }
             errorProvider.Clear();
+        }
+
+        private void ShowMessage(string text, string title, MessageType type)
+        {
+            switch (WindowState)
+            {
+                case FormWindowState.Maximized:
+                case FormWindowState.Normal:
+                    MessageBoxIcon messageBoxIcon;
+
+                    switch (type)
+                    {
+                        case MessageType.Error:
+                            messageBoxIcon = MessageBoxIcon.Error;
+                            break;
+                        case MessageType.Information:
+                            messageBoxIcon = MessageBoxIcon.Information;
+                            break;
+                        case MessageType.Warning:
+                            messageBoxIcon = MessageBoxIcon.Exclamation;
+                            break; 
+                        default:
+                            throw new ArgumentException("Invalid message type.", nameof(type));
+                    }
+
+                    MessageBox.Show(text, title, MessageBoxButtons.OK, messageBoxIcon);
+                    break;
+
+                case FormWindowState.Minimized:
+                    ToolTipIcon toolTipIcon;
+
+                    switch (type)
+                    {
+                        case MessageType.Error:
+                            toolTipIcon = ToolTipIcon.Error;
+                            break;
+                        case MessageType.Information:
+                            toolTipIcon = ToolTipIcon.Info;
+                            break;
+                        case MessageType.Warning:
+                            toolTipIcon = ToolTipIcon.Warning;
+                            break;
+                        default:
+                            throw new ArgumentException("Invalid message type.", nameof(type));
+                    }
+
+                    notifyIcon.ShowBalloonTip(5, title, text, toolTipIcon);
+                    break;
+            }
+        }
+
+        enum MessageType
+        {
+            Error,
+            Information,
+            Warning
         }
 
     }

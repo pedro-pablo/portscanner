@@ -37,6 +37,7 @@
             this.btnSelectPort = new System.Windows.Forms.Button();
             this.listBoxPorts = new System.Windows.Forms.ListBox();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
@@ -109,6 +110,12 @@
             this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
             this.errorProvider.ContainerControl = this;
             // 
+            // notifyIcon
+            // 
+            this.notifyIcon.BalloonTipTitle = "PortScanner";
+            this.notifyIcon.Text = "PortScanner";
+            this.notifyIcon.Visible = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -142,6 +149,7 @@
         private System.Windows.Forms.Button btnSelectPort;
         private System.Windows.Forms.ListBox listBoxPorts;
         private System.Windows.Forms.ErrorProvider errorProvider;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
     }
 }
 

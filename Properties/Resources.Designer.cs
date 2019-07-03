@@ -61,11 +61,33 @@ namespace PortScanner.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to 20=FTP;
+        ///22=SSH;
+        ///23=Telnet;
+        ///25=SMTP;
+        ///80=HTTP;
+        ///109=POP2;
+        ///110=POP3;
+        ///123=NTP;
+        ///194=IRC;
+        ///554=RTSP;
+        ///1433=SQL Server;
+        ///3306=MySQL;
+        ///5432=PostgreSQL;.
         /// </summary>
         internal static string PortDictionary {
             get {
                 return ResourceManager.GetString("PortDictionary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon PortScannerIcon {
+            get {
+                object obj = ResourceManager.GetObject("PortScannerIcon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
     }
