@@ -98,11 +98,13 @@
             this.listBoxPorts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.listBoxPorts.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listBoxPorts.FormattingEnabled = true;
+            this.listBoxPorts.IntegralHeight = false;
             this.listBoxPorts.Location = new System.Drawing.Point(12, 116);
+            this.listBoxPorts.MaximumSize = new System.Drawing.Size(310, 635);
             this.listBoxPorts.Name = "listBoxPorts";
             this.listBoxPorts.ScrollAlwaysVisible = true;
             this.listBoxPorts.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.listBoxPorts.Size = new System.Drawing.Size(310, 186);
+            this.listBoxPorts.Size = new System.Drawing.Size(310, 185);
             this.listBoxPorts.TabIndex = 6;
             // 
             // errorProvider
