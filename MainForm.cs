@@ -113,7 +113,16 @@ namespace PortScanner
                     }
                     else
                     {
-                        AddPortStr(portsStr[i]);
+                        try
+                        {
+                            AddPortStr(portsStr[i]);
+                        }
+                        catch (FormatException ex)
+                        {
+                            SetError(txtPort, ex.Message);
+                            UnlockControls();
+                            return;
+                        }
                     }
                 }
             }
@@ -159,11 +168,9 @@ namespace PortScanner
             {
                 portNumber = Convert.ToUInt16(portNumberStr);
             }
-            catch
+            catch (Exception ex)
             {
-                SetError(txtPort, $"{portNumberStr} is not a valid port.");
-                UnlockControls();
-                return;
+                throw new FormatException($"{portNumberStr} is not a valid port.", ex);
             }
 
             AddPort(portNumber);
@@ -172,13 +179,7 @@ namespace PortScanner
         private void AddPort(ushort portNumber)
         {
             PortInfo newPortInfo = new PortInfo(portNumber);
-            if (portsBindingList.Contains(newPortInfo))
-            {
-                SetError(txtPort, $"Port {portNumber} is repeated.");
-                UnlockControls();
-                return;
-            }
-            else
+            if (!portsBindingList.Contains(newPortInfo))
             {
                 portsBindingList.Add(new PortInfo(portNumber));
             }
