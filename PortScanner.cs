@@ -12,7 +12,7 @@ namespace PortScanner
     class PortScanner
     {
 
-        public async Task Scan(IPAddress targetIp, System.ComponentModel.BindingList<PortInfo> ports)
+        public async Task Scan(IPAddress targetIp, List<PortInfo> ports)
         {
             List<Task> allTasks = new List<Task>();
 

@@ -15,6 +15,7 @@ namespace PortScanner
     {
         PortScanner portScanner;
         IPAddress targetIpAddress;
+        List<PortInfo> ports;
         BindingList<PortInfo> portsBindingList;
         PortListForm portListForm;
 
@@ -26,13 +27,15 @@ namespace PortScanner
             Icon = Properties.Resources.PortScannerIcon;
             notifyIcon.Icon = Properties.Resources.PortScannerIcon;
             portScanner = new PortScanner();
-            portListForm = new PortListForm();
+            ports = new List<PortInfo>();
             portsBindingList = new BindingList<PortInfo>();
+            portListForm = new PortListForm();
             listBoxPorts.DataSource = portsBindingList;
         }
 
         private async void BtnScan_ClickAsync(object sender, EventArgs e)
         {
+            ports.Clear();
             LockControls();
             ClearErrors();
 
@@ -133,7 +136,9 @@ namespace PortScanner
                 return;
             }
 
-            await portScanner.Scan(targetIpAddress, portsBindingList);
+            ports = ports.OrderBy(p => p.Port).ToList();
+            BindPortsToList();
+            await portScanner.Scan(targetIpAddress, ports);
             ShowMessage("The port scan has been finished.", "Scan results", MessageType.Information);
             UnlockControls();
         }
@@ -179,9 +184,9 @@ namespace PortScanner
         private void AddPort(ushort portNumber)
         {
             PortInfo newPortInfo = new PortInfo(portNumber);
-            if (!portsBindingList.Contains(newPortInfo))
+            if (!ports.Contains(newPortInfo))
             {
-                portsBindingList.Add(new PortInfo(portNumber));
+                ports.Add(newPortInfo);
             }
         }
 
@@ -267,6 +272,16 @@ namespace PortScanner
                     notifyIcon.ShowBalloonTip(5, title, text, toolTipIcon);
                     break;
             }
+        }
+
+        private void BindPortsToList()
+        {
+            portsBindingList.Clear();
+            for (int i = 0; i < ports.Count; i++)
+            {
+                portsBindingList.Add(ports[i]);
+            }
+            portsBindingList.ResetBindings();
         }
 
         enum MessageType
