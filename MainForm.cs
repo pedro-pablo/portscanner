@@ -2,22 +2,19 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PortScanner
 {
     public partial class MainForm : Form
     {
-        PortScanner portScanner;
-        IPAddress targetIpAddress;
+        readonly PortScanner portScanner;
         List<PortInfo> ports;
-        BindingList<PortInfo> portsBindingList;
-        PortListForm portListForm;
+        readonly BindingList<PortInfo> portsBindingList;
+        readonly PortListForm portListForm;
+        IPAddress targetIpAddress;
 
         public MainForm()
         {
@@ -32,6 +29,8 @@ namespace PortScanner
             portListForm = new PortListForm();
             listBoxPorts.DataSource = portsBindingList;
         }
+
+        #region Events
 
         private async void BtnScan_ClickAsync(object sender, EventArgs e)
         {
@@ -166,6 +165,10 @@ namespace PortScanner
             }
         }
 
+        #endregion
+
+        #region Methods
+
         private void AddPortStr(string portNumberStr)
         {
             ushort portNumber;
@@ -243,7 +246,7 @@ namespace PortScanner
                             break;
                         case MessageType.Warning:
                             messageBoxIcon = MessageBoxIcon.Exclamation;
-                            break; 
+                            break;
                         default:
                             throw new ArgumentException("Invalid message type.", nameof(type));
                     }
@@ -283,6 +286,8 @@ namespace PortScanner
             }
             portsBindingList.ResetBindings();
         }
+
+        #endregion
 
         enum MessageType
         {

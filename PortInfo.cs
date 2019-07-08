@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PortScanner
 {
@@ -47,6 +43,28 @@ namespace PortScanner
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
+        public static void InitializePortDictionary()
+        {
+            if (String.IsNullOrEmpty(Properties.Resources.PortDictionary))
+            {
+                return;
+            }
+
+            portDictionary = new Dictionary<ushort, string>();
+            string[] textFileLines = Properties.Resources.PortDictionary.Replace("\r\n", "").Split(';');
+            for (int i = 0; i < textFileLines.Length; i++)
+            {
+                if (textFileLines[i] == String.Empty)
+                {
+                    continue;
+                }
+                string[] lineValues = textFileLines[i].Split('=');
+                portDictionary.Add(Convert.ToUInt16(lineValues[0]), lineValues[1]);
+            }
+        }
+
+        #region Overrides
+
         public override string ToString()
         {
             string returnStr = Port.ToString().PadRight(6, ' ') + Description.PadRight(33, ' ');
@@ -79,25 +97,7 @@ namespace PortScanner
             return Port;
         }
 
-        public static void InitializePortDictionary()
-        {
-            if (String.IsNullOrEmpty(Properties.Resources.PortDictionary))
-            {
-                return;
-            }
-
-            portDictionary = new Dictionary<ushort, string>();
-            string[] textFileLines = Properties.Resources.PortDictionary.Replace("\r\n", "").Split(';');
-            for (int i = 0; i < textFileLines.Length; i++)
-            {
-                if (textFileLines[i] == String.Empty)
-                {
-                    continue;
-                }
-                string[] lineValues = textFileLines[i].Split('=');
-                portDictionary.Add(Convert.ToUInt16(lineValues[0]), lineValues[1]);
-            }
-        }
+        #endregion
 
     }
 }
