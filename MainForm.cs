@@ -10,7 +10,6 @@ namespace PortScanner
 {
     public partial class MainForm : Form
     {
-        readonly PortScanner portScanner;
         List<PortInfo> ports;
         readonly BindingList<PortInfo> portsBindingList;
         readonly PortListForm portListForm;
@@ -23,7 +22,6 @@ namespace PortScanner
             PortInfo.InitializePortDictionary();
             Icon = Properties.Resources.PortScannerIcon;
             notifyIcon.Icon = Properties.Resources.PortScannerIcon;
-            portScanner = new PortScanner();
             ports = new List<PortInfo>();
             portsBindingList = new BindingList<PortInfo>();
             portListForm = new PortListForm();
@@ -40,9 +38,7 @@ namespace PortScanner
 
             if (!String.IsNullOrEmpty(txtIpAddress.Text))
             {
-                portScanner.GetIpAddress(txtIpAddress.Text, out IPAddress inputIp);
-
-                if (inputIp == null)
+                if (!IPAddress.TryParse(txtIpAddress.Text, out IPAddress inputIp))
                 {
                     SetError(txtIpAddress, "Not a valid IP address.");
                     UnlockControls();
@@ -137,7 +133,7 @@ namespace PortScanner
 
             ports = ports.OrderBy(p => p.Port).ToList();
             BindPortsToList();
-            await portScanner.Scan(targetIpAddress, ports);
+            await PortScanner.Scan(targetIpAddress, ports);
             ShowMessage("The port scan has been finished.", "Scan results", MessageType.Information);
             UnlockControls();
         }
