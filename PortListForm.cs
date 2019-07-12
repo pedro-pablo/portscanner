@@ -10,6 +10,10 @@ using System.Windows.Forms;
 
 namespace PortScanner
 {
+
+    /// <summary>
+    /// Form used to display a list of ports based on the values of the ports dictionary.
+    /// </summary>
     public partial class PortListForm : Form
     {
         public ushort SelectedPort { get; private set; }

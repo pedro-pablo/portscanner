@@ -8,6 +8,9 @@ using System.Windows.Forms;
 
 namespace PortScanner
 {
+    /// <summary>
+    /// Main form of the PortScanner.
+    /// </summary>
     public partial class MainForm : Form
     {
         List<PortInfo> ports;
@@ -165,6 +168,11 @@ namespace PortScanner
 
         #region Methods
 
+        /// <summary>
+        /// Tries to add a new port to the ports list.
+        /// </summary>
+        /// <param name="portNumberStr">String representation of a port number.</param>
+        /// <exception cref="FormatException"></exception>
         private void AddPortStr(string portNumberStr)
         {
             ushort portNumber;
@@ -180,6 +188,10 @@ namespace PortScanner
             AddPort(portNumber);
         }
 
+        /// <summary>
+        /// Creates a new PortInfo with the given port number and adds it to the ports list.
+        /// </summary>
+        /// <param name="portNumber">Number of the port.</param>
         private void AddPort(ushort portNumber)
         {
             PortInfo newPortInfo = new PortInfo(portNumber);
@@ -189,12 +201,20 @@ namespace PortScanner
             }
         }
 
+        /// <summary>
+        /// Sets the error message for the specified control and resizes it to fit the error icon.
+        /// </summary>
+        /// <param name="control">Control related to the error.</param>
+        /// <param name="errorMessage">Error message.</param>
         private void SetError(Control control, String errorMessage)
         {
             errorProvider.SetError(control, errorMessage);
             control.Width -= errorProvider.Icon.Width;
         }
 
+        /// <summary>
+        /// Disables controls that interfere with the port scanning.
+        /// </summary>
         private void LockControls()
         {
             txtIpAddress.Enabled = false;
@@ -203,6 +223,9 @@ namespace PortScanner
             btnScan.Enabled = false;
         }
 
+        /// <summary>
+        /// Enables controls that interfere with the port scanning.
+        /// </summary>
         private void UnlockControls()
         {
             txtIpAddress.Enabled = true;
@@ -211,6 +234,9 @@ namespace PortScanner
             btnScan.Enabled = true;
         }
 
+        /// <summary>
+        /// Clear the errors for all controls in this form and resets their original width.
+        /// </summary>
         private void ClearErrors()
         {
             for (int i = 0; i < Controls.Count; i++)
@@ -224,6 +250,14 @@ namespace PortScanner
             errorProvider.Clear();
         }
 
+        /// <summary>
+        /// Shows a message with the specified text, title and type.
+        /// The message may be exhibited in a message box or a tooltip notification,
+        /// depending on the state of the main form (if it is minimized or not).
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="title"></param>
+        /// <param name="type"></param>
         private void ShowMessage(string text, string title, MessageType type)
         {
             switch (WindowState)
@@ -273,6 +307,9 @@ namespace PortScanner
             }
         }
 
+        /// <summary>
+        /// Adds the ports in the ports list to the binding list.
+        /// </summary>
         private void BindPortsToList()
         {
             portsBindingList.Clear();
