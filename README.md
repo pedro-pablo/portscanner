@@ -1,3 +1,4 @@
+<img src="PortScannerIcon.png"></img>
 # PortScanner
 PortScanner is a tool for TCP port scanning.
 
