@@ -94,5 +94,8 @@
   <ItemGroup>
     <None Include="Resources\PortDictionary.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PortScannerIcon.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -37,6 +37,7 @@
             this.btnSelectPort = new System.Windows.Forms.Button();
             this.listBoxPorts = new System.Windows.Forms.ListBox();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
@@ -97,17 +98,25 @@
             this.listBoxPorts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.listBoxPorts.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listBoxPorts.FormattingEnabled = true;
+            this.listBoxPorts.IntegralHeight = false;
             this.listBoxPorts.Location = new System.Drawing.Point(12, 116);
+            this.listBoxPorts.MaximumSize = new System.Drawing.Size(310, 635);
             this.listBoxPorts.Name = "listBoxPorts";
             this.listBoxPorts.ScrollAlwaysVisible = true;
             this.listBoxPorts.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.listBoxPorts.Size = new System.Drawing.Size(310, 186);
+            this.listBoxPorts.Size = new System.Drawing.Size(310, 185);
             this.listBoxPorts.TabIndex = 6;
             // 
             // errorProvider
             // 
             this.errorProvider.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
             this.errorProvider.ContainerControl = this;
+            // 
+            // notifyIcon
+            // 
+            this.notifyIcon.BalloonTipTitle = "PortScanner";
+            this.notifyIcon.Text = "PortScanner";
+            this.notifyIcon.Visible = true;
             // 
             // MainForm
             // 
@@ -142,6 +151,7 @@
         private System.Windows.Forms.Button btnSelectPort;
         private System.Windows.Forms.ListBox listBoxPorts;
         private System.Windows.Forms.ErrorProvider errorProvider;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
     }
 }
 

@@ -2,43 +2,46 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PortScanner
 {
+    /// <summary>
+    /// Main form of the PortScanner.
+    /// </summary>
     public partial class MainForm : Form
     {
-        PortScanner portScanner;
+        List<PortInfo> ports;
+        readonly BindingList<PortInfo> portsBindingList;
+        readonly PortListForm portListForm;
         IPAddress targetIpAddress;
-        BindingList<PortInfo> portsBindingList;
-        PortListForm portListForm;
 
         public MainForm()
         {
             InitializeComponent();
 
             PortInfo.InitializePortDictionary();
-            portScanner = new PortScanner();
-            portListForm = new PortListForm();
+            Icon = Properties.Resources.PortScannerIcon;
+            notifyIcon.Icon = Properties.Resources.PortScannerIcon;
+            ports = new List<PortInfo>();
             portsBindingList = new BindingList<PortInfo>();
+            portListForm = new PortListForm();
             listBoxPorts.DataSource = portsBindingList;
         }
 
+        #region Events
+
         private async void BtnScan_ClickAsync(object sender, EventArgs e)
         {
+            ports.Clear();
             LockControls();
             ClearErrors();
 
             if (!String.IsNullOrEmpty(txtIpAddress.Text))
             {
-                portScanner.GetIpAddress(txtIpAddress.Text, out IPAddress inputIp);
-
-                if (inputIp == null)
+                if (!IPAddress.TryParse(txtIpAddress.Text, out IPAddress inputIp))
                 {
                     SetError(txtIpAddress, "Not a valid IP address.");
                     UnlockControls();
@@ -111,7 +114,16 @@ namespace PortScanner
                     }
                     else
                     {
-                        AddPortStr(portsStr[i]);
+                        try
+                        {
+                            AddPortStr(portsStr[i]);
+                        }
+                        catch (FormatException ex)
+                        {
+                            SetError(txtPort, ex.Message);
+                            UnlockControls();
+                            return;
+                        }
                     }
                 }
             }
@@ -122,7 +134,10 @@ namespace PortScanner
                 return;
             }
 
-            await portScanner.Scan(targetIpAddress, portsBindingList);
+            ports = ports.OrderBy(p => p.Port).ToList();
+            BindPortsToList();
+            await PortScanner.Scan(targetIpAddress, ports);
+            ShowMessage("The port scan has been finished.", "Scan results", MessageType.Information);
             UnlockControls();
         }
 
@@ -149,6 +164,15 @@ namespace PortScanner
             }
         }
 
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Tries to add a new port to the ports list.
+        /// </summary>
+        /// <param name="portNumberStr">String representation of a port number.</param>
+        /// <exception cref="FormatException"></exception>
         private void AddPortStr(string portNumberStr)
         {
             ushort portNumber;
@@ -156,37 +180,41 @@ namespace PortScanner
             {
                 portNumber = Convert.ToUInt16(portNumberStr);
             }
-            catch
+            catch (Exception ex)
             {
-                SetError(txtPort, $"{portNumberStr} is not a valid port.");
-                UnlockControls();
-                return;
+                throw new FormatException($"{portNumberStr} is not a valid port.", ex);
             }
 
             AddPort(portNumber);
         }
 
+        /// <summary>
+        /// Creates a new PortInfo with the given port number and adds it to the ports list.
+        /// </summary>
+        /// <param name="portNumber">Number of the port.</param>
         private void AddPort(ushort portNumber)
         {
             PortInfo newPortInfo = new PortInfo(portNumber);
-            if (portsBindingList.Contains(newPortInfo))
+            if (!ports.Contains(newPortInfo))
             {
-                SetError(txtPort, $"Port {portNumber} is repeated.");
-                UnlockControls();
-                return;
-            }
-            else
-            {
-                portsBindingList.Add(new PortInfo(portNumber));
+                ports.Add(newPortInfo);
             }
         }
 
+        /// <summary>
+        /// Sets the error message for the specified control and resizes it to fit the error icon.
+        /// </summary>
+        /// <param name="control">Control related to the error.</param>
+        /// <param name="errorMessage">Error message.</param>
         private void SetError(Control control, String errorMessage)
         {
             errorProvider.SetError(control, errorMessage);
             control.Width -= errorProvider.Icon.Width;
         }
 
+        /// <summary>
+        /// Disables controls that interfere with the port scanning.
+        /// </summary>
         private void LockControls()
         {
             txtIpAddress.Enabled = false;
@@ -195,6 +223,9 @@ namespace PortScanner
             btnScan.Enabled = false;
         }
 
+        /// <summary>
+        /// Enables controls that interfere with the port scanning.
+        /// </summary>
         private void UnlockControls()
         {
             txtIpAddress.Enabled = true;
@@ -203,6 +234,9 @@ namespace PortScanner
             btnScan.Enabled = true;
         }
 
+        /// <summary>
+        /// Clear the errors for all controls in this form and resets their original width.
+        /// </summary>
         private void ClearErrors()
         {
             for (int i = 0; i < Controls.Count; i++)
@@ -214,6 +248,85 @@ namespace PortScanner
                 }
             }
             errorProvider.Clear();
+        }
+
+        /// <summary>
+        /// Shows a message with the specified text, title and type.
+        /// The message may be exhibited in a message box or a tooltip notification,
+        /// depending on the state of the main form (if it is minimized or not).
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="title"></param>
+        /// <param name="type"></param>
+        private void ShowMessage(string text, string title, MessageType type)
+        {
+            switch (WindowState)
+            {
+                case FormWindowState.Maximized:
+                case FormWindowState.Normal:
+                    MessageBoxIcon messageBoxIcon;
+
+                    switch (type)
+                    {
+                        case MessageType.Error:
+                            messageBoxIcon = MessageBoxIcon.Error;
+                            break;
+                        case MessageType.Information:
+                            messageBoxIcon = MessageBoxIcon.Information;
+                            break;
+                        case MessageType.Warning:
+                            messageBoxIcon = MessageBoxIcon.Exclamation;
+                            break;
+                        default:
+                            throw new ArgumentException("Invalid message type.", nameof(type));
+                    }
+
+                    MessageBox.Show(text, title, MessageBoxButtons.OK, messageBoxIcon);
+                    break;
+
+                case FormWindowState.Minimized:
+                    ToolTipIcon toolTipIcon;
+
+                    switch (type)
+                    {
+                        case MessageType.Error:
+                            toolTipIcon = ToolTipIcon.Error;
+                            break;
+                        case MessageType.Information:
+                            toolTipIcon = ToolTipIcon.Info;
+                            break;
+                        case MessageType.Warning:
+                            toolTipIcon = ToolTipIcon.Warning;
+                            break;
+                        default:
+                            throw new ArgumentException("Invalid message type.", nameof(type));
+                    }
+
+                    notifyIcon.ShowBalloonTip(5, title, text, toolTipIcon);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Adds the ports in the ports list to the binding list.
+        /// </summary>
+        private void BindPortsToList()
+        {
+            portsBindingList.Clear();
+            for (int i = 0; i < ports.Count; i++)
+            {
+                portsBindingList.Add(ports[i]);
+            }
+            portsBindingList.ResetBindings();
+        }
+
+        #endregion
+
+        enum MessageType
+        {
+            Error,
+            Information,
+            Warning
         }
 
     }
