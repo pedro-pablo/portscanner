@@ -1,14 +1,20 @@
-<img src="PortScannerIcon.png"></img>
+![PortScanner icon](PortScannerIcon.png)
 # PortScanner
 PortScanner is a tool for TCP port scanning.
+
+## Screenshot
+![Screenshot](Resources/PortScanner_screenshot.png)
 
 ## Features
 * Lightweight GUI made with Windows Forms
 * Customizable list of known ports
-* Supports port interval scanning
+* Port interval scanning
+* Asynchronous port scanning
+* Adjustable timeout for port scanning
 
-## Known issues
-* Program freezes when scanning too many ports
+## Supported languages
+* English
+* Portuguese
 
 ## Prerequisites
 PortScanner requires [.NET Framework 4.5](https://dotnet.microsoft.com/download/dotnet-framework/net45).
