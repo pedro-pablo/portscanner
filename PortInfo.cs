@@ -1,50 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using PortScanner.Properties;
 
 namespace PortScanner
 {
-
     /// <summary>
-    /// Represents a TCP port.
+    ///     Represents a TCP port.
     /// </summary>
-    class PortInfo : INotifyPropertyChanged
+    public class PortInfo : INotifyPropertyChanged
     {
-
         /// <summary>
-        /// Dictionary of ports and their descriptions as defined in the PortDictionary.txt resource.
+        ///     Dictionary of ports and their descriptions as defined in the PortDictionary.txt resource.
         /// </summary>
-        public static Dictionary<ushort, string> portDictionary;
+        public static Dictionary<ushort, string> PortDictionary;
+
+        private bool? _open;
 
         public PortInfo(ushort portNumber)
         {
             Port = portNumber;
-
-            _ = portDictionary.TryGetValue(portNumber, out string description);
-            Description = description ?? String.Empty;
+            Description = PortDictionary.TryGetValue(portNumber, out string description) ? description : string.Empty;
         }
 
         /// <summary>
-        /// Number of the TCP port.
+        ///     Number of the TCP port.
         /// </summary>
-        public ushort Port { get; private set; }
+        public ushort Port { get; }
 
         /// <summary>
-        /// Short description of what this port is commonly used for.
+        ///     Short description of what this port is commonly used for.
         /// </summary>
-        public string Description { get; private set; }
-
-        private bool? _open;
+        public string Description { get; }
 
         /// <summary>
-        /// Whether the port is open or not.
+        ///     Whether the port is open or not.
         /// </summary>
         public bool? Open
         {
-            get
-            {
-                return _open;
-            }
+            get => _open;
             set
             {
                 _open = value;
@@ -60,32 +54,27 @@ namespace PortScanner
         }
 
         /// <summary>
-        /// Initializes the port dictionary with the values obtained from the PortDictionary.txt resource.
+        ///     Initializes the port dictionary with the values obtained from the PortDictionary.txt resource.
         /// </summary>
         public static void InitializePortDictionary()
         {
-            if (String.IsNullOrEmpty(Properties.Resources.PortDictionary))
-            {
-                return;
-            }
+            if (string.IsNullOrEmpty(Resources.PortDictionary)) return;
 
-            portDictionary = new Dictionary<ushort, string>();
-            string[] textFileLines = Properties.Resources.PortDictionary.Replace("\r\n", "").Split(';');
+            PortDictionary = new Dictionary<ushort, string>();
+            var textFileLines = Resources.PortDictionary.Replace("\r\n", "").Split(';');
             for (int i = 0; i < textFileLines.Length; i++)
             {
-                if (textFileLines[i] == String.Empty)
-                {
-                    continue;
-                }
+                if (textFileLines[i] == string.Empty) continue;
                 string[] lineValues = textFileLines[i].Split('=');
-                portDictionary.Add(Convert.ToUInt16(lineValues[0]), lineValues[1]);
+                PortDictionary.Add(Convert.ToUInt16(lineValues[0]), lineValues[1]);
             }
         }
 
         #region Overrides
 
         /// <summary>
-        /// Returns a string with the data of the PortInfo object formatted for displaying in the ListBox control of the main form.
+        ///     Returns a string with the data of the PortInfo object formatted for displaying in the ListBox control of the main
+        ///     form.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -103,20 +92,19 @@ namespace PortScanner
                     returnStr += "*";
                     break;
             }
+
             return returnStr;
         }
 
         /// <summary>
-        /// Compares two PortInfo objects based on their values of the Port property. Returns false if the object is not an instance of PortInfo.
+        ///     Compares two PortInfo objects based on their values of the Port property. Returns false if the object is not an
+        ///     instance of PortInfo.
         /// </summary>
         /// <param name="obj">Object to be compared.</param>
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is PortInfo portInfo))
-            {
-                return false;
-            }
+            if (!(obj is PortInfo portInfo)) return false;
             return portInfo.Port == Port;
         }
 
@@ -126,6 +114,5 @@ namespace PortScanner
         }
 
         #endregion
-
     }
 }

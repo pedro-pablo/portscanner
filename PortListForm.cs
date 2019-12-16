@@ -1,34 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using PortScanner.Properties;
 
 namespace PortScanner
 {
-
     /// <summary>
-    /// Form used to display a list of ports based on the values of the ports dictionary.
+    ///     Form used to display a list of ports based on the values of the ports dictionary.
     /// </summary>
-    public partial class PortListForm : Form
+    public sealed partial class PortListForm : Form
     {
-        public ushort SelectedPort { get; private set; }
-
         public PortListForm()
         {
             InitializeComponent();
-            listPorts.DataSource = new BindingSource(PortInfo.portDictionary, null);
+            Text = Labels.PortListForm;
+            SelectedPorts = new List<ushort>();
+            listPorts.DataSource = new BindingSource(PortInfo.PortDictionary, null);
             listPorts.DisplayMember = "Value";
             listPorts.ValueMember = "Key";
         }
 
+        public List<ushort> SelectedPorts { get; }
+
         private void BtnConfirm_Click(object sender, EventArgs e)
         {
-            SelectedPort = ((KeyValuePair<ushort, string>)listPorts.SelectedItem).Key;
+            foreach (KeyValuePair<ushort, string> selectedPort in listPorts.SelectedItems)
+                SelectedPorts.Add(selectedPort.Key);
+
+            listPorts.ClearSelected();
+
             DialogResult = DialogResult.OK;
         }
 

@@ -22,14 +22,14 @@ namespace PortScanner.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class Labels {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal Labels() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace PortScanner.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PortScanner.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PortScanner.Properties.Labels", typeof(Labels).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,43 +61,83 @@ namespace PortScanner.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 20=FTP;
-        ///21=FTP Control;
-        ///22=SSH;
-        ///23=Telnet;
-        ///25=SMTP;
-        ///70=Gopher;
-        ///80=HTTP;
-        ///109=POP2;
-        ///110=POP3;
-        ///123=NTP;
-        ///194=IRC;
-        ///220=IMAP;
-        ///443=HTTPS;
-        ///554=RTSP;
-        ///1433=SQL Server;
-        ///3306=MySQL;
-        ///5432=PostgreSQL;
-        ///7777=Terraria;
-        ///8484=MapleStory;
-        ///25565=Minecraft;
-        ///27016=Magicka;
-        ///28015=Rust (game);
-        ///28960=Call of Duty;.
+        ///   Looks up a localized string similar to Description.
         /// </summary>
-        internal static string PortDictionary {
+        internal static string DescriptionColumn {
             get {
-                return ResourceManager.GetString("PortDictionary", resourceCulture);
+                return ResourceManager.GetString("DescriptionColumn", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized string similar to IP address:.
         /// </summary>
-        internal static System.Drawing.Icon PortScannerIcon {
+        internal static string IpAddress {
             get {
-                object obj = ResourceManager.GetObject("PortScannerIcon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ResourceManager.GetString("IpAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        internal static string OpenColumn {
+            get {
+                return ResourceManager.GetString("OpenColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Port.
+        /// </summary>
+        internal static string PortColumn {
+            get {
+                return ResourceManager.GetString("PortColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List of ports.
+        /// </summary>
+        internal static string PortListForm {
+            get {
+                return ResourceManager.GetString("PortListForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ports:.
+        /// </summary>
+        internal static string Ports {
+            get {
+                return ResourceManager.GetString("Ports", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scan.
+        /// </summary>
+        internal static string Scan {
+            get {
+                return ResourceManager.GetString("Scan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select port from list.
+        /// </summary>
+        internal static string SelectPortButton {
+            get {
+                return ResourceManager.GetString("SelectPortButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timeout (ms):.
+        /// </summary>
+        internal static string Timeout {
+            get {
+                return ResourceManager.GetString("Timeout", resourceCulture);
             }
         }
     }

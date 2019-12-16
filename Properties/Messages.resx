@@ -117,16 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="errorProvider.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>58</value>
-  </metadata>
-  <metadata name="portInfoBindingSource.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>246, 17</value>
-  </metadata>
-  <metadata name="notifyIcon.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>140, 17</value>
-  </metadata>
+  <data name="InvalidIpAddress" xml:space="preserve">
+    <value>Not a valid IP address.</value>
+    <comment>When an invalid IP address is provided.</comment>
+  </data>
+  <data name="InvalidMessageType" xml:space="preserve">
+    <value>Invalid message type.</value>
+    <comment>When a message type is null or does not exist.</comment>
+  </data>
+  <data name="InvalidPort" xml:space="preserve">
+    <value>Port [0] is not a valid port.</value>
+    <comment>When a port is invalid.</comment>
+  </data>
+  <data name="InvalidPortInput" xml:space="preserve">
+    <value>Invalid characters in port input.</value>
+    <comment>When the port input has one or more invalid characters.</comment>
+  </data>
+  <data name="InvalidPortInRange" xml:space="preserve">
+    <value>Port [0] in [1] is invalid.</value>
+    <comment>When a port inside a port range is invalid.</comment>
+  </data>
+  <data name="InvalidPortRange" xml:space="preserve">
+    <value>Invalid port range format in [0].</value>
+    <comment>When a port range in a port entry ([0]) is invalid.</comment>
+  </data>
+  <data name="NoPortsSpecified" xml:space="preserve">
+    <value>At least one valid port must be specified.</value>
+    <comment>When no ports where specified in the port input.</comment>
+  </data>
+  <data name="RequiredIpAddress" xml:space="preserve">
+    <value>IP address is required.</value>
+    <comment>When an IP address was not provided but is required.</comment>
+  </data>
+  <data name="ScanAborted" xml:space="preserve">
+    <value>Port scan aborted.</value>
+    <comment>When a port scan was aborted.</comment>
+  </data>
+  <data name="ScanCompleteSuccessful" xml:space="preserve">
+    <value>Port scan sucessfully completed.</value>
+    <comment>When a port scan completed successfully.</comment>
+  </data>
+  <data name="ScanErrorTitle" xml:space="preserve">
+    <value>Scan error</value>
+    <comment>Title of an error message related to a scanning task.</comment>
+  </data>
+  <data name="ScanResultsTitle" xml:space="preserve">
+    <value>Scan results</value>
+    <comment>Title of an information message related to the scanning completion.</comment>
+  </data>
 </root>

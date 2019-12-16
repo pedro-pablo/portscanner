@@ -1,6 +1,6 @@
 ﻿namespace PortScanner
 {
-    partial class PortListForm
+    sealed partial class PortListForm
     {
         /// <summary>
         /// Required designer variable.
@@ -39,6 +39,7 @@
             this.listPorts.FormattingEnabled = true;
             this.listPorts.Location = new System.Drawing.Point(0, 0);
             this.listPorts.Name = "listPorts";
+            this.listPorts.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.listPorts.Size = new System.Drawing.Size(269, 264);
             this.listPorts.TabIndex = 0;
             // 
@@ -55,6 +56,7 @@
             // 
             // btnCancel
             // 
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.btnCancel.Location = new System.Drawing.Point(0, 265);
             this.btnCancel.Name = "btnCancel";

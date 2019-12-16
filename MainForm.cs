@@ -1,83 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using PortScanner.Properties;
 
 namespace PortScanner
 {
     /// <summary>
-    /// Main form of the PortScanner.
+    ///     Main form of the PortScan.
     /// </summary>
     public partial class MainForm : Form
     {
-        List<PortInfo> ports;
-        readonly BindingList<PortInfo> portsBindingList;
-        readonly PortListForm portListForm;
-        IPAddress targetIpAddress;
+        private readonly PortListForm _portListForm;
+        private IPAddress _targetIpAddress;
 
         public MainForm()
         {
             InitializeComponent();
 
             PortInfo.InitializePortDictionary();
-            Icon = Properties.Resources.PortScannerIcon;
-            notifyIcon.Icon = Properties.Resources.PortScannerIcon;
-            ports = new List<PortInfo>();
-            portsBindingList = new BindingList<PortInfo>();
-            portListForm = new PortListForm();
-            listBoxPorts.DataSource = portsBindingList;
+            Icon = Resources.PortScannerIcon;
+            notifyIcon.Icon = Resources.PortScannerIcon;
+            _portListForm = new PortListForm();
+
+            lbIpAddress.Text = Labels.IpAddress;
+            lbPorts.Text = Labels.Ports;
+            lbTimeout.Text = Labels.Timeout;
+            btnSelectPort.Text = Labels.SelectPortButton;
+            btnScan.Text = Labels.Scan;
+            portGridViewColumn.HeaderText = Labels.PortColumn;
+            descriptionGridViewColumn.HeaderText = Labels.DescriptionColumn;
+            openGridViewColumn.HeaderText = Labels.OpenColumn;
+        }
+
+        private enum MessageType
+        {
+            Error,
+            Information,
+            Warning
         }
 
         #region Events
 
         private async void BtnScan_ClickAsync(object sender, EventArgs e)
         {
-            ports.Clear();
             LockControls();
             ClearErrors();
+            portInfoBindingSource.Clear();
 
-            if (!String.IsNullOrEmpty(txtIpAddress.Text))
+            if (!string.IsNullOrEmpty(txtIpAddress.Text))
             {
                 if (!IPAddress.TryParse(txtIpAddress.Text, out IPAddress inputIp))
                 {
-                    SetError(txtIpAddress, "Not a valid IP address.");
+                    SetError(txtIpAddress, Messages.InvalidIpAddress);
                     UnlockControls();
                     return;
                 }
-                else
-                {
-                    targetIpAddress = inputIp;
-                }
+
+                _targetIpAddress = inputIp;
             }
             else
             {
-                SetError(txtIpAddress, "IP address is required.");
+                SetError(txtIpAddress, Messages.RequiredIpAddress);
                 UnlockControls();
                 return;
             }
 
-            if (!String.IsNullOrEmpty(txtPort.Text))
+            if (!string.IsNullOrEmpty(txtPorts.Text))
             {
-                if (txtPort.Text.Any(c => !char.IsDigit(c) && c != ';' && c != '-'))
+                if (txtPorts.Text.Any(c => !char.IsDigit(c) && c != ';' && c != '-'))
                 {
-                    SetError(txtPort, "Invalid value.");
+                    SetError(txtPorts, Messages.InvalidPortInput);
                     UnlockControls();
                     return;
                 }
 
-                string[] portsStr = txtPort.Text.Split(';');
-                portsBindingList.Clear();
+                string[] portsStr = txtPorts.Text.Split(';');
 
                 for (int i = 0; i < portsStr.Length; i++)
-                {
                     if (portsStr[i].Contains('-'))
                     {
                         if (portsStr[i].Count(c => c == '-') > 1)
                         {
-                            SetError(txtPort, $"Invalid port range format in {portsStr[i]}.");
+                            SetError(txtPorts, string.Format(Messages.InvalidPortRange, portsStr[i]));
                             UnlockControls();
                             return;
                         }
@@ -91,7 +99,8 @@ namespace PortScanner
                         }
                         catch
                         {
-                            SetError(txtPort, $"Port {portIntervalStr[0]} in {portsStr[i]} is invalid.");
+                            SetError(txtPorts,
+                                string.Format(Messages.InvalidPortInRange, portIntervalStr[0], portsStr[i]));
                             UnlockControls();
                             return;
                         }
@@ -102,66 +111,92 @@ namespace PortScanner
                         }
                         catch
                         {
-                            SetError(txtPort, $"Port {portIntervalStr[1]} in {portsStr[i]} is invalid.");
+                            SetError(txtPorts,
+                                string.Format(Messages.InvalidPortInRange, portIntervalStr[1], portsStr[i]));
                             UnlockControls();
                             return;
                         }
 
-                        for (ushort port = portBegin; port <= portEnd; port++)
-                        {
-                            AddPort(port);
-                        }
+                        for (ushort portNumber = portBegin; portNumber <= portEnd; portNumber++) BindPort(portNumber);
                     }
                     else
                     {
-                        try
+                        if (ushort.TryParse(portsStr[i], out ushort portNumber))
                         {
-                            AddPortStr(portsStr[i]);
+                            BindPort(portNumber);
                         }
-                        catch (FormatException ex)
+                        else
                         {
-                            SetError(txtPort, ex.Message);
+                            SetError(txtPorts, string.Format(Messages.InvalidPort, portsStr[i]));
                             UnlockControls();
                             return;
                         }
                     }
-                }
             }
             else
             {
-                SetError(txtPort, "Must specify one or more ports to scan.");
+                SetError(txtPorts, Messages.NoPortsSpecified);
                 UnlockControls();
                 return;
             }
 
-            ports = ports.OrderBy(p => p.Port).ToList();
-            BindPortsToList();
-            await PortScanner.Scan(targetIpAddress, ports);
-            ShowMessage("The port scan has been finished.", "Scan results", MessageType.Information);
+            ushort timeout = (ushort) numTimeout.Value;
+            List<Task> scanningTasks = new List<Task>(portInfoBindingSource.Count);
+            foreach (PortInfo port in portInfoBindingSource)
+                scanningTasks.Add(PortScan.ScanPortAsync(_targetIpAddress, port, timeout));
+
+            bool errors = false;
+            try
+            {
+                await Task.WhenAll(scanningTasks);
+            }
+            catch (Exception ex)
+            {
+                ShowMessage(ex.Message, Messages.ScanErrorTitle, MessageType.Error);
+                errors = true;
+            }
+
+            portInfoBindingSource.ResetBindings(false);
+            if (!errors)
+                ShowMessage(Messages.ScanCompleteSuccessful, Messages.ScanResultsTitle, MessageType.Information);
+            else
+                ShowMessage(Messages.ScanAborted, Messages.ScanResultsTitle, MessageType.Warning);
+
             UnlockControls();
         }
 
         private void BtnSelectPort_Click(object sender, EventArgs e)
         {
-            if (portListForm.ShowDialog(this) == DialogResult.OK)
+            if (_portListForm.ShowDialog(this) == DialogResult.OK)
             {
-                string port = portListForm.SelectedPort.ToString();
-                if (!String.IsNullOrEmpty(txtPort.Text))
+                string addedPorts = string.Empty;
+
+                if (!string.IsNullOrEmpty(txtPorts.Text) && !txtPorts.Text.EndsWith(";")) addedPorts += ';';
+
+                int itemCount = _portListForm.SelectedPorts.Count;
+                for (int i = 0; i < itemCount; i++)
                 {
-                    if (txtPort.Text.EndsWith(";"))
-                    {
-                        txtPort.Text += port;
-                    }
-                    else
-                    {
-                        txtPort.Text += ";" + port;
-                    }
+                    addedPorts += _portListForm.SelectedPorts[i].ToString();
+                    if (i < itemCount - 1) addedPorts += ';';
                 }
-                else
-                {
-                    txtPort.Text = port;
-                }
+
+                txtPorts.Text += addedPorts;
             }
+        }
+
+        private void ScanResultGridview_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            PortInfo portRow = (PortInfo) portInfoBindingSource[e.RowIndex];
+            if (portRow != null)
+                switch (portRow.Open)
+                {
+                    case true:
+                        e.CellStyle.BackColor = Color.LightGreen;
+                        break;
+                    case false:
+                        e.CellStyle.BackColor = Color.LightCoral;
+                        break;
+                }
         }
 
         #endregion
@@ -169,91 +204,60 @@ namespace PortScanner
         #region Methods
 
         /// <summary>
-        /// Tries to add a new port to the ports list.
-        /// </summary>
-        /// <param name="portNumberStr">String representation of a port number.</param>
-        /// <exception cref="FormatException"></exception>
-        private void AddPortStr(string portNumberStr)
-        {
-            ushort portNumber;
-            try
-            {
-                portNumber = Convert.ToUInt16(portNumberStr);
-            }
-            catch (Exception ex)
-            {
-                throw new FormatException($"{portNumberStr} is not a valid port.", ex);
-            }
-
-            AddPort(portNumber);
-        }
-
-        /// <summary>
-        /// Creates a new PortInfo with the given port number and adds it to the ports list.
-        /// </summary>
-        /// <param name="portNumber">Number of the port.</param>
-        private void AddPort(ushort portNumber)
-        {
-            PortInfo newPortInfo = new PortInfo(portNumber);
-            if (!ports.Contains(newPortInfo))
-            {
-                ports.Add(newPortInfo);
-            }
-        }
-
-        /// <summary>
-        /// Sets the error message for the specified control and resizes it to fit the error icon.
+        ///     Sets the error message for the specified control and resizes it to fit the error icon.
         /// </summary>
         /// <param name="control">Control related to the error.</param>
         /// <param name="errorMessage">Error message.</param>
-        private void SetError(Control control, String errorMessage)
+        private void SetError(Control control, string errorMessage)
         {
             errorProvider.SetError(control, errorMessage);
             control.Width -= errorProvider.Icon.Width;
         }
 
         /// <summary>
-        /// Disables controls that interfere with the port scanning.
+        ///     Disables controls that interfere with the port scanning.
         /// </summary>
         private void LockControls()
         {
             txtIpAddress.Enabled = false;
-            txtPort.Enabled = false;
+            txtPorts.Enabled = false;
             btnSelectPort.Enabled = false;
             btnScan.Enabled = false;
+            numTimeout.Enabled = false;
+            scanResultGridview.Enabled = false;
         }
 
         /// <summary>
-        /// Enables controls that interfere with the port scanning.
+        ///     Enables controls that interfere with the port scanning.
         /// </summary>
         private void UnlockControls()
         {
             txtIpAddress.Enabled = true;
-            txtPort.Enabled = true;
+            txtPorts.Enabled = true;
             btnSelectPort.Enabled = true;
             btnScan.Enabled = true;
+            numTimeout.Enabled = true;
+            scanResultGridview.Enabled = true;
         }
 
         /// <summary>
-        /// Clear the errors for all controls in this form and resets their original width.
+        ///     Clear the errors for all controls in this form and resets their original width.
         /// </summary>
         private void ClearErrors()
         {
             for (int i = 0; i < Controls.Count; i++)
             {
                 Control control = Controls[i];
-                if (!String.IsNullOrEmpty(errorProvider.GetError(control)))
-                {
-                    control.Width += errorProvider.Icon.Width;
-                }
+                if (!string.IsNullOrEmpty(errorProvider.GetError(control))) control.Width += errorProvider.Icon.Width;
             }
+
             errorProvider.Clear();
         }
 
         /// <summary>
-        /// Shows a message with the specified text, title and type.
-        /// The message may be exhibited in a message box or a tooltip notification,
-        /// depending on the state of the main form (if it is minimized or not).
+        ///     Shows a message with the specified text, title and type.
+        ///     The message may be exhibited in a message box or a tooltip notification,
+        ///     depending on the state of the main form (if it is minimized or not).
         /// </summary>
         /// <param name="text"></param>
         /// <param name="title"></param>
@@ -278,7 +282,7 @@ namespace PortScanner
                             messageBoxIcon = MessageBoxIcon.Exclamation;
                             break;
                         default:
-                            throw new ArgumentException("Invalid message type.", nameof(type));
+                            throw new ArgumentException(Messages.InvalidMessageType, nameof(type));
                     }
 
                     MessageBox.Show(text, title, MessageBoxButtons.OK, messageBoxIcon);
@@ -299,7 +303,7 @@ namespace PortScanner
                             toolTipIcon = ToolTipIcon.Warning;
                             break;
                         default:
-                            throw new ArgumentException("Invalid message type.", nameof(type));
+                            throw new ArgumentException(Messages.InvalidMessageType, nameof(type));
                     }
 
                     notifyIcon.ShowBalloonTip(5, title, text, toolTipIcon);
@@ -308,26 +312,15 @@ namespace PortScanner
         }
 
         /// <summary>
-        /// Adds the ports in the ports list to the binding list.
+        ///     Creates a PortInfo object for a given port number and binds it to the ports binding source.
         /// </summary>
-        private void BindPortsToList()
+        /// <param name="portNumber">Port number.</param>
+        private void BindPort(ushort portNumber)
         {
-            portsBindingList.Clear();
-            for (int i = 0; i < ports.Count; i++)
-            {
-                portsBindingList.Add(ports[i]);
-            }
-            portsBindingList.ResetBindings();
+            PortInfo port = new PortInfo(portNumber);
+            if (!portInfoBindingSource.Contains(port)) portInfoBindingSource.Add(port);
         }
 
         #endregion
-
-        enum MessageType
-        {
-            Error,
-            Information,
-            Warning
-        }
-
     }
 }
