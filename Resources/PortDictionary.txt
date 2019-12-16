@@ -15,9 +15,3 @@
 1433=SQL Server;
 3306=MySQL;
 5432=PostgreSQL;
-7777=Terraria;
-8484=MapleStory;
-25565=Minecraft;
-27016=Magicka;
-28015=Rust (game);
-28960=Call of Duty;

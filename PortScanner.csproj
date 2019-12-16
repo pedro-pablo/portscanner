@@ -144,5 +144,8 @@
   <ItemGroup>
     <None Include="Resources\PortScannerIcon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\PortScanner_screenshot.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
