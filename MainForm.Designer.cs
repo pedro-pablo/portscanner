@@ -41,10 +41,10 @@
             this.lbTimeout = new System.Windows.Forms.Label();
             this.numTimeout = new System.Windows.Forms.NumericUpDown();
             this.scanResultGridview = new System.Windows.Forms.DataGridView();
+            this.portInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.portGridViewColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.descriptionGridViewColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.openGridViewColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.portInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numTimeout)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.scanResultGridview)).BeginInit();
@@ -80,7 +80,7 @@
             // 
             this.btnScan.Location = new System.Drawing.Point(196, 84);
             this.btnScan.Name = "btnScan";
-            this.btnScan.Size = new System.Drawing.Size(176, 23);
+            this.btnScan.Size = new System.Drawing.Size(177, 23);
             this.btnScan.TabIndex = 7;
             this.btnScan.Text = "Scan";
             this.btnScan.UseVisualStyleBackColor = true;
@@ -90,14 +90,14 @@
             // 
             this.txtIpAddress.Location = new System.Drawing.Point(232, 6);
             this.txtIpAddress.Name = "txtIpAddress";
-            this.txtIpAddress.Size = new System.Drawing.Size(140, 20);
+            this.txtIpAddress.Size = new System.Drawing.Size(141, 20);
             this.txtIpAddress.TabIndex = 1;
             // 
             // btnSelectPort
             // 
-            this.btnSelectPort.Location = new System.Drawing.Point(12, 84);
+            this.btnSelectPort.Location = new System.Drawing.Point(11, 84);
             this.btnSelectPort.Name = "btnSelectPort";
-            this.btnSelectPort.Size = new System.Drawing.Size(178, 23);
+            this.btnSelectPort.Size = new System.Drawing.Size(179, 23);
             this.btnSelectPort.TabIndex = 6;
             this.btnSelectPort.Text = "Select port from list";
             this.btnSelectPort.UseVisualStyleBackColor = true;
@@ -132,7 +132,7 @@
             0,
             0});
             this.numTimeout.Minimum = new decimal(new int[] {
-            500,
+            10,
             0,
             0,
             0});
@@ -175,6 +175,10 @@
             this.scanResultGridview.TabIndex = 8;
             this.scanResultGridview.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.ScanResultGridview_CellFormatting);
             // 
+            // portInfoBindingSource
+            // 
+            this.portInfoBindingSource.DataSource = typeof(PortScanner.PortInfo);
+            // 
             // portGridViewColumn
             // 
             this.portGridViewColumn.DataPropertyName = "Port";
@@ -191,7 +195,7 @@
             this.descriptionGridViewColumn.Name = "descriptionGridViewColumn";
             this.descriptionGridViewColumn.ReadOnly = true;
             this.descriptionGridViewColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.descriptionGridViewColumn.Width = 220;
+            this.descriptionGridViewColumn.Width = 200;
             // 
             // openGridViewColumn
             // 
@@ -203,10 +207,6 @@
             this.openGridViewColumn.ReadOnly = true;
             this.openGridViewColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.openGridViewColumn.Width = 70;
-            // 
-            // portInfoBindingSource
-            // 
-            this.portInfoBindingSource.DataSource = typeof(PortScanner.PortInfo);
             // 
             // MainForm
             // 
